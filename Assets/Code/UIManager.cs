@@ -21,12 +21,14 @@ public class UIManager : MonoBehaviour {
     }
     public static void BeginCombatNode(Weapon _weapon, int _round)
     {
-        t._timingArea.SetTimings(
-            TimingFromWep(_weapon, _round, 0),
-            TimingFromWep(_weapon, _round, 1),
-            TimingFromWep(_weapon, _round, 2),
-            TimingFromWep(_weapon, _round, 3)
-            );
+        if(t._timingArea != null){
+            t._timingArea.SetTimings(
+                TimingFromWep(_weapon, _round, 0),
+                TimingFromWep(_weapon, _round, 1),
+                TimingFromWep(_weapon, _round, 2),
+                TimingFromWep(_weapon, _round, 3)
+                );
+        }
     }
     public static void UpdateCombatNode(float _currentTime)
     {
