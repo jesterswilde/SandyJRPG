@@ -68,6 +68,7 @@ public class Weapon : MonoBehaviour {
     public Defense DefenseInDir(Direction _facing, Direction _attackDir)
     {
         int _dir = ((int)_facing - (int)_attackDir) % 4;
+        _dir = (_dir >= 0) ? _dir : 4 + _dir; 
         switch (_dir) {
             case 0: return _front;
             case 1: return _sideClockwise;
