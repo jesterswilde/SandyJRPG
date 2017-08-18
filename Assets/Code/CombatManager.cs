@@ -20,6 +20,8 @@ public class CombatManager : MonoBehaviour {
     [SerializeField]
     AudioClip _hitSFX; 
     public static AudioClip HitSFX { get { return t._hitSFX; } }
+    [SerializeField]
+    AudioClip _heavyDefSFX; 
     List<Player> _players = new List<Player>();
     List<Enemy> _enemies = new List<Enemy>();
     ICharacter _currentAttacker;
@@ -28,11 +30,17 @@ public class CombatManager : MonoBehaviour {
     CombatPhase _phase; 
 
 
-    public static void PlaySFX(int _damage)
+    public static void PlaySFX(int _damage, Defense _def)
     {
         if(_damage > 0)
         {
-            SFX.Create(t._hitSFX, Vector3.zero); 
+            if(_def != Defense.Heavy)
+            {
+                SFX.Create(t._hitSFX, Vector3.zero); 
+            }else
+            {
+                SFX.Create(t._heavyDefSFX, Vector3.zero);
+            }
         }
         else
         {
@@ -100,31 +108,11 @@ public class CombatManager : MonoBehaviour {
     }
 
 
-    Direction GetInput()
-    {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            return Direction.Up;
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            return Direction.Down;
-        }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            return Direction.Left;
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            return Direction.Right;
-        }
-        return Direction.None; 
-    }
     void Update()
     {
         if(_phase != null)
         {
-            _phase.Update(Time.deltaTime, GetInput()); 
+            _phase.Update(Time.deltaTime); 
         }
     }
 }

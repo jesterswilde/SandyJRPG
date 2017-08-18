@@ -7,19 +7,32 @@ public class UIManager : MonoBehaviour {
     public static UIManager t;
     TimingArea _timingArea;
     [SerializeField]
-    float _width; 
+    float _width;
+    [SerializeField]
+    Color _heavyDefense;
+    public static Color HeavyDefense { get { return t._heavyDefense; } }
+    [SerializeField]
+    Color _lightDefense;
+    public static Color LightDefense { get { return t._lightDefense; } }
+    [SerializeField]
+    Color _noDefense; 
+    public static Color NoDefense { get { return t._noDefense; } }
     public static float Width { get { return t._width; } }
     public static float ModWidth { get { return 1 / CombatManager.NodeDuration * Width; } }
+
+    [SerializeField]
+    DefenseUI _defenseUI; 
 
     public static void RegisterTimingArea(TimingArea _area)
     {
         t._timingArea = _area; 
     }
+
     public static void BeginCombatPhase(ICharacter _attacker, ICharacter _defender)
     {
         
     }
-    public static void BeginCombatNode(Weapon _weapon, int _round)
+    public static void BeginCombatNode(Weapon _weapon, int _round, ICharacter _defender)
     {
         if(t._timingArea != null){
             t._timingArea.SetTimings(
@@ -29,10 +42,12 @@ public class UIManager : MonoBehaviour {
                 TimingFromWep(_weapon, _round, 3)
                 );
         }
+        t._defenseUI.SetDefender(_defender); 
     }
     public static void UpdateCombatNode(float _currentTime)
     {
-        t._timingArea.UpdateSlider(_currentTime); 
+        t._timingArea.UpdateSlider(_currentTime);
+        t._defenseUI.UpdateFacing(); 
     }
     static float[] TimingFromWep(Weapon _weapon, int _round, int _index)
     {
@@ -48,6 +63,7 @@ public class UIManager : MonoBehaviour {
 
     void Awake()
     {
-        t = this; 
+        t = this;
+        _defenseUI = Instantiate(_defenseUI); 
     }
 }

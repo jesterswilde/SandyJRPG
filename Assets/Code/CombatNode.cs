@@ -20,24 +20,37 @@ public class CombatNode  {
         _attacker = attacker;
         _defender = defender;
         _results.Round = round;
-        UIManager.BeginCombatNode(_attacker.Weapon, _round); 
+        UIManager.BeginCombatNode(_attacker.Weapon, _round, defender); 
     }
-    public void Update(float _delta, Direction _dir)
+    public void Update(float _delta, Direction _attackerDir, Direction _defenderDir)
     {
         if(_currentTime > _maxTime)
         {
             _end(_results); 
         }
-        if(_dir != Direction.None && _attacker.CanAttackInDir(_round, _dir))
-        {
-            _results.AttackDir = _dir; 
-            _results.Damage = _attacker.Swing(_round, _currentTime, _dir);
-            _results.BlockType = _defender.GotHit(_results.Damage, _results.AttackDir);
-            CombatManager.PlaySFX(_results.Damage); 
-            _end(_results); 
-        }
+        HandleDefender(_defenderDir);
+        HandleAttacker(_attackerDir); 
         UIManager.UpdateCombatNode(_currentTime); 
         _currentTime += _delta; 
+    }
+    void HandleAttacker(Direction _dir)
+    {
+        if (_dir != Direction.None && _attacker.CanAttackInDir(_round, _dir))
+        {
+            _attacker.ChangeFacing(_dir);
+            _results.AttackDir = _dir;
+            _results.Damage = _attacker.Swing(_round, _currentTime, _dir);
+            _results.BlockType = _defender.GotHit(_results.Damage, _results.AttackDir);
+            CombatManager.PlaySFX(_results.Damage, _results.BlockType);
+            _end(_results);
+        }
+    }
+    void HandleDefender(Direction _dir)
+    {
+        if(_dir != Direction.None)
+        {
+            _defender.ChangeFacing(_dir); 
+        }
     }
 }
 

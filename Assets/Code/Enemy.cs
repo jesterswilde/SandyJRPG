@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq; 
 
 [RequireComponent(typeof(DefenseUI))]
 public class Enemy : MonoBehaviour, ICharacter
@@ -16,7 +17,7 @@ public class Enemy : MonoBehaviour, ICharacter
     Renderer _rend;
     Color _baseColor;
     //Weapon must not be null
-    public int AttackRounds { get { return _weapon.CalcMaxAttacks(); } }
+    public int MaxAttackRounds { get { return _weapon.CalcMaxAttacks(); } }
     public bool IsAlive { get { return _health > 0; } }
 
     public void Select()
@@ -42,6 +43,28 @@ public class Enemy : MonoBehaviour, ICharacter
     public bool CanAttackInDir(int _round, Direction _dir)
     {
         return _weapon.CanAttackInDir(_round, _dir);
+    }
+
+    
+    public List<AtDir> PossibleAttacks(int _round)
+    {
+        List<AtDir> _atDir = new List<AtDir>(); 
+        for(int i = 0; i < _weapon.AllAttacks.Count; i++)
+        {
+            if(_weapon.CanAttackInDir(_round, (Direction)i))
+            {
+                _atDir.Add(new AtDir(_weapon.AllAttacks[i][_round], (Direction)i));
+            }
+        }
+        return _atDir; 
+    }
+    public Defense DefenseInDirection(Direction _dir)
+    {
+        return _weapon.DefenseInDir(_facing, _dir); 
+    }
+    public void ChangeFacing(Direction _dir)
+    {
+        _facing = _dir;
     }
 
     void Start()

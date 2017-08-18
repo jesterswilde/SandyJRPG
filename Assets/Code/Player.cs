@@ -16,7 +16,7 @@ public class Player : MonoBehaviour, ICharacter {
     Color _baseColor; 
 
     //Weapon must not be null
-    public int AttackRounds { get { return _weapon.CalcMaxAttacks(); } }
+    public int MaxAttackRounds { get { return _weapon.CalcMaxAttacks(); } }
     public bool IsAlive { get { return _health > 0; } }
 
     public void Select()
@@ -41,7 +41,15 @@ public class Player : MonoBehaviour, ICharacter {
 
     public bool CanAttackInDir(int _round, Direction _dir)
     {
-        return _weapon.CanAttackInDir(_round, _dir); 
+        return _weapon.CanAttackInDir(_round, _dir);
+    }
+    public Defense DefenseInDirection(Direction _dir)
+    {
+        return _weapon.DefenseInDir(_facing, _dir);
+    }
+    public void ChangeFacing(Direction _dir)
+    {
+        _facing = _dir;
     }
     void Awake()
     {
