@@ -5,6 +5,8 @@ using System.Linq;
 
 public class Weapon : MonoBehaviour {
 
+
+    //Weapons contain most of the info about a character currently
     [SerializeField]
     List<Attacks> _up = new List<Attacks>();
     [SerializeField]
@@ -13,6 +15,8 @@ public class Weapon : MonoBehaviour {
     List<Attacks> _down = new List<Attacks>();
     [SerializeField]
     List<Attacks> _left = new List<Attacks>();
+
+    //All dirs will be filled later. But it's just a list of lists
     List<List<Attacks>> _allDirs;
     public List<List<Attacks>> AllAttacks { get { return _allDirs; } }
 
@@ -21,6 +25,7 @@ public class Weapon : MonoBehaviour {
     [SerializeField]
     int _specialDamage;
 
+    //Setting values creates a default value.
     [SerializeField]
     Defense _front = Defense.Light;
     [SerializeField]
@@ -38,7 +43,11 @@ public class Weapon : MonoBehaviour {
 
     public int CalcMaxAttacks()
     {
+        //Gets the longest attack combo. 
         return _allDirs.Max((_dir)=>{
+            //The reason I do this instead of just checking the count is to make sure
+            //that if you happen to have a bunch of blank attack slots at the end we don't 
+            //just have a round wher eyou can't actually attack.
             int _highestIndex = 0; 
             for(int i = 0; i < _dir.Count; i++)
             {
@@ -51,11 +60,13 @@ public class Weapon : MonoBehaviour {
         });
     }
 
+    //To understand this one you really need to read DamageFromHit and DefenseInDir
     public int GotHit(int _damDealt, Direction _facing, Direction _attackDir)
     {
         return DamageFromHit(_damDealt, DefenseInDir(_facing, _attackDir));
     }
 
+    //PRetty straight forward, take raw damage, and mitigate it based on defense type
     public int DamageFromHit(int _damDealt, Defense _def)
     {
         switch (_def)
@@ -65,9 +76,14 @@ public class Weapon : MonoBehaviour {
             default: return _damDealt; 
         }
     }
+    //This is some trixy maths. I take advantage of the fact that there are only 4 directiosn we care about (0 - 3)
+    //And that enum values are just numbers. Explaining this fully would get...messy
     public Defense DefenseInDir(Direction _facing, Direction _attackDir)
     {
+        //using a type in parens says "hey convert to this type" so (int)_facing says "Take this direction enum and turn it into an int
         int _dir = ((int)_facing - (int)_attackDir) % 4;
+        //This is a turnery value.  It's like a condensed if else statement. if the value is true, return the left. If it's false, return the right. 
+        //C# % can return negative values, they aren't helpful.
         _dir = (_dir >= 0) ? _dir : 4 + _dir; 
         switch (_dir) {
             case 0: return _front;
@@ -77,6 +93,8 @@ public class Weapon : MonoBehaviour {
         }
         throw new System.Exception("Something weird happened with modulo");
     }
+
+    //Simple helper function
     public bool CanAttackInDir(int _round, Direction _dir)
     {
         List<Attacks> _currentDir = _allDirs[(int)_dir];
@@ -86,10 +104,14 @@ public class Weapon : MonoBehaviour {
         }
         return false; 
     }
+
+    //This returns the damage of a swing, in a direction, at a time
     public int Swing(int _round, float _time, Direction _dir)
     {
         if(CanAttackInDir(_round, _dir))
         {
+            //we do the Direction to number trick here with (int)_dir 
+            //an easier to read example would be how much damage did I do with _allAttacks[LeftAttack][Round 3].atSecond(2.5)
             return _allDirs[(int)_dir][_round].AttackedAt(_time); 
         }
         return 0;

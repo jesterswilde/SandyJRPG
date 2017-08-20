@@ -16,6 +16,7 @@ public class DefenseUI : MonoBehaviour {
 
     ICharacter _char;
 
+    //Moves the UI over the target character
     public void SetDefender(ICharacter character)
     {
         transform.position = character.transform.position;
@@ -31,6 +32,9 @@ public class DefenseUI : MonoBehaviour {
     }
     Color ColorDefense(Defense _def)
     {
+
+        //switch statements are just a convention for a list of if statements
+        //We are saying If(_def == defense.heavy) then for the next one (if _def == defense.light) etc
         switch (_def)
         {
             case Defense.Heavy: return UIManager.HeavyDefense;
